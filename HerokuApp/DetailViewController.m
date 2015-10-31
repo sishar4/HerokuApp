@@ -54,6 +54,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    _dataCon = [[BookDataController alloc] init];
 }
 
 - (IBAction)checkoutBook:(id)sender
@@ -81,76 +82,36 @@
     spinner.center = self.view.center;
     [self.view addSubview:spinner];
     [spinner startAnimating];
-    
-    //Create Session
-    NSURLSessionConfiguration *checkoutBookSessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *checkoutBookSession = [NSURLSession sessionWithConfiguration:checkoutBookSessionConfig delegate:self delegateQueue:nil];
-    
+
     //Format book's url for checkout service call
     NSString *bookUrl = [_url substringToIndex:[_url length] - 1];
-    NSString *urlString = [NSString stringWithFormat:@"http://prolific-interview.herokuapp.com/561bdb9712514500090e71b2%@", bookUrl];
-    NSURL *url = [NSURL URLWithString:urlString];
-    NSMutableURLRequest *checkoutBookRequest = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
-    [checkoutBookRequest setHTTPMethod:@"PUT"];
-    [checkoutBookRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"content-type"];
-    
+    //Format date
     NSDate *now = [NSDate date];
     [_dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
     NSString *date = [_dateFormatter stringFromDate:now];
     
-    NSMutableString *myRequestString = [NSMutableString stringWithString:@"lastCheckedOutBy="];
-    [myRequestString appendString:name];
-    [myRequestString appendString:@"&lastCheckedOut="];
-    [myRequestString appendString:date];
-    NSData *requestData = [NSData dataWithBytes:[myRequestString UTF8String] length:[myRequestString length]];
-    [checkoutBookRequest setHTTPBody:requestData];
-    
-    //Make GET Request and handle response
-    NSURLSessionDataTask *checkoutBookTask =
-    [checkoutBookSession dataTaskWithRequest:checkoutBookRequest
-                           completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                               
-                               NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                               NSLog(@"RESPONSE >>>>>> %@", response);
-                               
-                               dispatch_async(dispatch_get_main_queue(), ^{
-                                   [spinner stopAnimating];
-                                   [spinner removeFromSuperview];
-                                   
-                                   if (!error && httpResponse.statusCode == 200) {
-                                       NSError *localError;
-                                       NSDictionary *parsedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&localError];
-                                       NSLog(@"UPDATED BOOK >>>>>> %@", parsedObject);
-                                       
-                                       Book *bookObj = [[Book alloc] initWithTitle:[parsedObject objectForKey:@"title"]
-                                                                            author:[parsedObject objectForKey:@"author"]
-                                                                         publisher:self.publisherLabel.text
-                                                                              tags:self.tagsLabel.text
-                                                                    lastCheckedOut:[parsedObject objectForKey:@"lastCheckedOut"]
-                                                                  lastCheckedOutBy:[parsedObject objectForKey:@"lastCheckedOutBy"]
-                                                                               url:[parsedObject objectForKey:@"url"]];
-
-                                       Book *shared = [Book sharedInstance];
-                                       [shared.bookArray replaceObjectAtIndex:_indexOfBook withObject:bookObj];
-                                       
-                                       //Set flag for MasterViewController to update it's list of books
-                                       [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"didChangeListOfBooks"];
-                                       [[NSUserDefaults standardUserDefaults] synchronize];
-                                       [self.navigationController popViewControllerAnimated:YES];
-                                       
-                                   }
-                                   else {
-                                       //show error message
-                                       NSLog(@"ERROR >>>>>>> %@", error.description);
-                                       UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Checkout Book" message:@"Failed to checkout the selected book. Please try again." preferredStyle:UIAlertControllerStyleAlert];
-                                       UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                                       [failAlert addAction:removeAlert];
-                                       [self presentViewController:failAlert animated:YES completion:nil];
-                                   }
-                               });
-                               
-                           }];
-    [checkoutBookTask resume];
+    [_dataCon checkoutBookWithUrl:bookUrl WithName:name withDateString:date andCompletionHandler:^(Book *bookObj, BOOL success) {
+        
+        [spinner stopAnimating];
+        [spinner removeFromSuperview];
+        
+        if (success) {
+            [bookObj setPublisher:self.publisherLabel.text];
+            [bookObj setTags:self.tagsLabel.text];
+            Book *shared = [Book sharedInstance];
+            [shared.bookArray replaceObjectAtIndex:_indexOfBook withObject:bookObj];
+            
+            //Set flag for MasterViewController to update it's list of books
+            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"didChangeListOfBooks"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            [self.navigationController popViewControllerAnimated:YES];
+        } else {
+            UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Checkout Book" message:@"Failed to checkout the selected book. Please try again." preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            [failAlert addAction:removeAlert];
+            [self presentViewController:failAlert animated:YES completion:nil];
+        }
+    }];
 }
 
 - (IBAction)shareBook:(id)sender

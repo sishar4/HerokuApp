@@ -61,7 +61,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    self.dataController = [[BookDataController alloc] init];
+    _dataController = [[BookDataController alloc] init];
     self.books = [[NSMutableArray alloc] init];
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -132,45 +132,20 @@
     //Format book's url for delete service call
     NSString *bookUrl = [bookToDelete.url substringToIndex:[bookToDelete.url length] - 1];
     
-    //Create Session
-    NSURLSessionConfiguration *deleteBookSessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *deleteBookSession = [NSURLSession sessionWithConfiguration:deleteBookSessionConfig delegate:self delegateQueue:nil];
-    
-    NSString *urlString = [NSString stringWithFormat:@"http://prolific-interview.herokuapp.com/561bdb9712514500090e71b2%@", bookUrl];
-    NSURL *url = [NSURL URLWithString:urlString];
-    NSMutableURLRequest *deleteBookRequest = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
-    [deleteBookRequest setHTTPMethod:@"DELETE"];
-    
-    //Make DELETE Request and handle response
-    NSURLSessionDataTask *deleteBookTask =
-    [deleteBookSession dataTaskWithRequest:deleteBookRequest
-                   completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                       
-                       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                       NSLog(@"RESPONSE >>>>>> %@", response);
-                       
-                       dispatch_async(dispatch_get_main_queue(), ^{
-                           [_spinner stopAnimating];
-                           [_spinner removeFromSuperview];
-                           
-                           if (!error && httpResponse.statusCode == 204) {
-                               Book *shared = [Book sharedInstance];
-                               [shared.bookArray removeObjectAtIndex:indexPath.row];
-                               [self.books removeObjectAtIndex:indexPath.row];
-                               [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                           }
-                           else {
-                               //show error message
-                               NSLog(@"ERROR >>>>>>> %@", error.description);
-                               UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Delete Book" message:@"Failed to delete the specified book. Please try again." preferredStyle:UIAlertControllerStyleAlert];
-                               UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                               [failAlert addAction:removeAlert];
-                               [self presentViewController:failAlert animated:YES completion:nil];
-                           }
-                       });
-                       
-                   }];
-    [deleteBookTask resume];
+    [_dataController deleteBookAtIndex:indexPath WithUrl:bookUrl andCompletionHandler:^(BOOL success) {
+        [_spinner stopAnimating];
+        [_spinner removeFromSuperview];
+        
+        if (success) {
+            [self.books removeObjectAtIndex:indexPath.row];
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        } else {
+            UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Delete Book" message:@"Failed to delete the specified book. Please try again." preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            [failAlert addAction:removeAlert];
+            [self presentViewController:failAlert animated:YES completion:nil];
+        }
+    }];
 }
 
 - (IBAction)deleteAllBooks:(id)sender

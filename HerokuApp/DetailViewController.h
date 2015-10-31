@@ -7,8 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BookDataController.h"
 
 @interface DetailViewController : UIViewController <NSURLSessionDelegate, UITextFieldDelegate>
+
+@property (nonatomic, strong) BookDataController *dataCon;
 
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @property (nonatomic, strong) UIAlertAction *okAction;
