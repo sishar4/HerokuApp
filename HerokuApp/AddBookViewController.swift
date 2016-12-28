@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AddBookViewController: UIViewController, NSURLSessionDelegate, UITextFieldDelegate {
+class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var authorTextField: UITextField!
@@ -16,26 +16,26 @@ class AddBookViewController: UIViewController, NSURLSessionDelegate, UITextField
     @IBOutlet weak var tagsTextField: UITextField!
     @IBOutlet weak var submitBtn: UIButton!
     
-    @IBAction func cancel(sender: UIBarButtonItem) {
+    @IBAction func cancel(_ sender: UIBarButtonItem) {
         if !titleTextField.text!.isEmpty || !authorTextField.text!.isEmpty || !publisherTextField.text!.isEmpty || !tagsTextField.text!.isEmpty {
             
-            let alert = UIAlertController(title: "Cancel Add Book?", message: "Are you sure you want to cancel adding the new book. All unsaved changes will be lost.", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Cancel Add Book?", message: "Are you sure you want to cancel adding the new book. All unsaved changes will be lost.", preferredStyle: UIAlertControllerStyle.alert)
             let dismissActionHandler = { (action:UIAlertAction!) -> Void in
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
             }
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: dismissActionHandler))
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: dismissActionHandler))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         } else {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
         }
     }
     
-    @IBAction func submitNewBook(sender: UIButton) {
-        if titleTextField.text == "" || authorTextField.text == "" || (titleTextField.text!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()) == "") || (authorTextField.text!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()) == "") {
-            let alert = UIAlertController(title: "Form Incomplete", message: "You must specify a book title and author(s) to add a new book.", preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+    @IBAction func submitNewBook(_ sender: UIButton) {
+        if titleTextField.text == "" || authorTextField.text == "" || (titleTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces) == "") || (authorTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces) == "") {
+            let alert = UIAlertController(title: "Form Incomplete", message: "You must specify a book title and author(s) to add a new book.", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         } else {
             print("Book title >>> " + titleTextField.text!)
             print("Book author >>> " + authorTextField.text!)
@@ -44,55 +44,55 @@ class AddBookViewController: UIViewController, NSURLSessionDelegate, UITextField
     }
     
     func addNewBook() {
-        let actInd : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0,0, 50, 50)) as UIActivityIndicatorView
+        let actInd : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRect(x: 0,y: 0, width: 50, height: 50)) as UIActivityIndicatorView
         actInd.center = self.view.center
         actInd.hidesWhenStopped = true
-        actInd.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        actInd.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
         view.addSubview(actInd)
         actInd.startAnimating()
         
-        let session = NSURLSession.sharedSession()
-        let request = NSMutableURLRequest(URL: NSURL(string: "http://prolific-interview.herokuapp.com/561bdb9712514500090e71b2/books")!)
-        request.HTTPMethod = "POST"
+        let session = URLSession.shared
+        let request = NSMutableURLRequest(url: URL(string: "http://prolific-interview.herokuapp.com/561bdb9712514500090e71b2/books")!)
+        request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "content-type")
         let bodyData = String(format: "title=%@&author=%@&publisher=%@&categories=%@",titleTextField.text!, authorTextField.text!, publisherTextField.text!, tagsTextField.text!)
-        request.HTTPBody = bodyData.dataUsingEncoding(NSUTF8StringEncoding);
+        request.httpBody = bodyData.data(using: String.Encoding.utf8);
         
-        let task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
+        let task = session.dataTask(with: request as URLRequest, completionHandler: {data, response, error -> Void in
             print("Response: \(response)")
-            let strData = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let strData = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
             print("Body: \(strData)")
             
             do{
-                let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary
-                print(json)
-                let bookTitle = json?.objectForKey("title") as! String
-                let author = json?.objectForKey("author") as! String
-                let url = json?.objectForKey("url") as! String
+                let json = try JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? NSDictionary
+                print(json!)
+                let bookTitle = json?.object(forKey: "title") as! String
+                let author = json?.object(forKey: "author") as! String
+                let url = json?.object(forKey: "url") as! String
                 
                 let bookObj = Book(title: bookTitle, author: author, publisher: self.publisherTextField.text, tags: self.tagsTextField.text,  lastCheckedOut: "", lastCheckedOutBy: "", url: url)
-                let bookShared = Book.sharedInstance()
-                bookShared.bookArray!.addObject(bookObj)
+                let bookShared = Book.sharedInstance() as? Book
+                bookShared?.bookArray!.add(bookObj!)
                 
-                dispatch_async(dispatch_get_main_queue(),{
+                DispatchQueue.main.async(execute: {
                     //Set flag for MasterViewController to update it's list of books from the backend
-                    NSUserDefaults.standardUserDefaults().setObject("YES", forKey: "didChangeListOfBooks")
-                    NSUserDefaults.standardUserDefaults().synchronize()
-                    self.dismissViewControllerAnimated(true, completion: nil)
+                    UserDefaults.standard.set("YES", forKey: "didChangeListOfBooks")
+                    UserDefaults.standard.synchronize()
+                    self.dismiss(animated: true, completion: nil)
                 })
                 
             } catch let error as NSError {
                 print(error)
-                let alert = UIAlertController(title: "Could Not Add Book", message: "Unable to add book to the library. Please try again.", preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler:nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                let alert = UIAlertController(title: "Could Not Add Book", message: "Unable to add book to the library. Please try again.", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler:nil))
+                self.present(alert, animated: true, completion: nil)
             }
         })
         task.resume()
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true;
     }

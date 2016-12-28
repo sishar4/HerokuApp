@@ -262,6 +262,7 @@
 				TargetAttributes = {
 					FAC96DEC1BD02C8200C08752 = {
 						CreatedOnToolsVersion = 7.0.1;
+						LastSwiftMigration = 0820;
 					};
 					FAC96E081BD02C8200C08752 = {
 						CreatedOnToolsVersion = 7.0.1;
@@ -480,6 +481,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "HerokuApp/HerokuApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -494,6 +496,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.sahil.HerokuApp.HerokuApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "HerokuApp/HerokuApp-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
