@@ -7,7 +7,6 @@
 //
 
 #import "MasterViewController.h"
-#import "DetailViewController.h"
 #import "Book.h"
 
 @interface MasterViewController ()
@@ -77,6 +76,16 @@
 {
     [self performSegueWithIdentifier:@"addBook" sender:nil];
 }
+
+#pragma mark - DetailViewControllerProtocol
+
+- (void)updatedBook:(Book *)obj AtIndex:(NSUInteger)index {
+    
+    Book *shared = [Book sharedInstance];
+    [shared.bookArray replaceObjectAtIndex:index withObject:obj];
+    [self.books replaceObjectAtIndex:index withObject:obj];
+}
+
 
 #pragma mark - Table View
 
@@ -205,6 +214,8 @@
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
     
         self.detailViewController = (DetailViewController *)[segue destinationViewController];
+        self.detailViewController.delegate = self;
+        
         //set Book detail labels on detailViewController
         Book *obj = (Book *)sender;
         [self.detailViewController setBookTitle:obj.title];

@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "BookDataController.h"
+#import "DetailViewController.h"
+//@class DetailViewController;
 
-@class DetailViewController;
-
-@interface MasterViewController : UITableViewController <NSURLSessionDelegate>
+@interface MasterViewController : UITableViewController <NSURLSessionDelegate, DetailViewControllerProtocol>
 
 @property (nonatomic, strong) BookDataController *dataController;
 @property (nonatomic, strong) DetailViewController *detailViewController;

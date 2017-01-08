@@ -100,12 +100,8 @@
         if (success) {
             [bookObj setPublisher:self.publisherLabel.text];
             [bookObj setTags:self.tagsLabel.text];
-            Book *shared = [Book sharedInstance];
-            [shared.bookArray replaceObjectAtIndex:_indexOfBook withObject:bookObj];
+            [self.delegate updatedBook:bookObj AtIndex:_indexOfBook];
             
-            //Set flag for MasterViewController to update it's list of books
-            [[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"didChangeListOfBooks"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
             [self.navigationController popViewControllerAnimated:YES];
         } else {
             UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Checkout Book" message:@"Failed to checkout the selected book. Please try again." preferredStyle:UIAlertControllerStyleAlert];

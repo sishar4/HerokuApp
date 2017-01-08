@@ -9,7 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "BookDataController.h"
 
+@protocol DetailViewControllerProtocol <NSObject>
+
+- (void)updatedBook:(Book *)obj AtIndex:(NSUInteger)index;
+@end
+
 @interface DetailViewController : UIViewController <NSURLSessionDelegate, UITextFieldDelegate>
+
+@property (nonatomic, weak) id <DetailViewControllerProtocol> delegate;
 
 @property (nonatomic, strong) BookDataController *dataCon;
 
