@@ -8,8 +8,15 @@
 
 import UIKit
 
+@objc protocol AddBookProtocol: class {
+    
+    func added(book: Book)
+}
+
 class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDelegate {
 
+    var delegate: AddBookProtocol?
+    
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var authorTextField: UITextField!
     @IBOutlet weak var publisherTextField: UITextField!
@@ -72,13 +79,9 @@ class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDe
                 let url = json?.object(forKey: "url") as! String
                 
                 let bookObj = Book(title: bookTitle, author: author, publisher: self.publisherTextField.text, tags: self.tagsTextField.text,  lastCheckedOut: "", lastCheckedOutBy: "", url: url)
-                let bookShared = Book.sharedInstance() as? Book
-                bookShared?.bookArray!.add(bookObj!)
                 
                 DispatchQueue.main.async(execute: {
-                    //Set flag for MasterViewController to update it's list of books from the backend
-                    UserDefaults.standard.set("YES", forKey: "didChangeListOfBooks")
-                    UserDefaults.standard.synchronize()
+                    self.delegate?.added(book: bookObj!)
                     self.dismiss(animated: true, completion: nil)
                 })
                 
@@ -100,7 +103,7 @@ class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDe
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-
+        UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
     }
     
     override func didReceiveMemoryWarning() {

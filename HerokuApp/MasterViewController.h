@@ -9,12 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "BookDataController.h"
 #import "DetailViewController.h"
-//@class DetailViewController;
 
 @interface MasterViewController : UITableViewController <NSURLSessionDelegate, DetailViewControllerProtocol>
 
 @property (nonatomic, strong) BookDataController *dataController;
 @property (nonatomic, strong) DetailViewController *detailViewController;
+
 @property (nonatomic, strong) NSMutableArray *books;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @property (nonatomic, assign) NSUInteger indexOfSelectedBook;

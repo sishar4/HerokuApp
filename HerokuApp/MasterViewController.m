@@ -8,12 +8,14 @@
 
 #import "MasterViewController.h"
 #import "Book.h"
+#import "HerokuApp-Swift.h"
 
-@interface MasterViewController ()
+@interface MasterViewController () <AddBookProtocol>
 
 @property dispatch_queue_t masterBooksQueue;
-
+@property (nonatomic, strong) AddBookViewController *addBookViewController;
 @end
+
 
 @implementation MasterViewController
 
@@ -42,23 +44,6 @@
     }];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    //Check if user added or updated a book
-    NSString *didChangeListOfBooks = [[NSUserDefaults standardUserDefaults] objectForKey:@"didChangeListOfBooks"];
-    if ([didChangeListOfBooks isEqualToString:@"YES"]) {
-        //If so, update the list by getting new list
-        Book *shared = [Book sharedInstance];
-        [self.books removeAllObjects];
-        [self.books addObjectsFromArray:shared.bookArray];
-        [self.tableView reloadData];
-        //Reset flag
-        [[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"didChangeListOfBooks"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
@@ -84,8 +69,18 @@
     Book *shared = [Book sharedInstance];
     [shared.bookArray replaceObjectAtIndex:index withObject:obj];
     [self.books replaceObjectAtIndex:index withObject:obj];
+    [self.tableView reloadData];
 }
 
+#pragma mark - AddBookProtocol
+
+- (void)addedWithBook:(Book *)book {
+    
+    Book *shared = [Book sharedInstance];
+    [shared.bookArray addObject:book];
+    [self.books addObject:book];
+    [self.tableView reloadData];
+}
 
 #pragma mark - Table View
 
@@ -226,6 +221,10 @@
         [self.detailViewController setLastCheckedOutBy:obj.lastCheckedOutBy];
         [self.detailViewController setUrl:obj.url];
         [self.detailViewController setIndexOfBook:_indexOfSelectedBook];
+    } else if ([[segue identifier] isEqualToString:@"addBook"]) {
+        
+        self.addBookViewController = (AddBookViewController *)[segue destinationViewController];
+        self.addBookViewController.delegate = self;
     }
 }
 
