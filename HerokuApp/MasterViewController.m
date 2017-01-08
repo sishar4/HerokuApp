@@ -12,6 +12,8 @@
 
 @interface MasterViewController ()
 
+@property dispatch_queue_t masterBooksQueue;
+
 @end
 
 @implementation MasterViewController
@@ -24,7 +26,8 @@
     [self.view addSubview:_spinner];
     [_spinner startAnimating];
     
-    [_dataController getAllBooksWithCompletionHandler:^(NSMutableArray *result, BOOL success) {
+    
+    [_dataController getAllBooksWithQueue:self.masterBooksQueue andCompletionHandler:^(NSMutableArray *result, BOOL success) {
         [_spinner stopAnimating];
         [_spinner removeFromSuperview];
         
@@ -60,6 +63,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    self.masterBooksQueue = dispatch_queue_create("com.sahil.master", DISPATCH_QUEUE_SERIAL);
     
     _dataController = [[BookDataController alloc] init];
     self.books = [[NSMutableArray alloc] init];
@@ -132,7 +137,7 @@
     //Format book's url for delete service call
     NSString *bookUrl = [bookToDelete.url substringToIndex:[bookToDelete.url length] - 1];
     
-    [_dataController deleteBookAtIndex:indexPath WithUrl:bookUrl andCompletionHandler:^(BOOL success) {
+    [_dataController deleteBookAtIndex:indexPath withUrl:bookUrl withQueue:self.masterBooksQueue andCompletionHandler:^(BOOL success) {
         [_spinner stopAnimating];
         [_spinner removeFromSuperview];
         
@@ -178,7 +183,7 @@
     [_spinner startAnimating];
     
     //Delete all books
-    [_dataController deleteAllBooksWithCompletionHandler:^(BOOL success) {
+    [_dataController deleteAllBooksWithQueue:self.masterBooksQueue andCompletionHandler:^(BOOL success) {
         [_spinner stopAnimating];
         [_spinner removeFromSuperview];
         

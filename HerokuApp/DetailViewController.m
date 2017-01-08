@@ -11,6 +11,7 @@
 
 @interface DetailViewController ()
 
+@property dispatch_queue_t detailBookQueue;
 @end
 
 @implementation DetailViewController
@@ -54,6 +55,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    self.detailBookQueue = dispatch_queue_create("com.sahil.checkout", DISPATCH_QUEUE_SERIAL);
     _dataCon = [[BookDataController alloc] init];
 }
 
@@ -90,7 +92,7 @@
     [_dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
     NSString *date = [_dateFormatter stringFromDate:now];
     
-    [_dataCon checkoutBookWithUrl:bookUrl WithName:name withDateString:date andCompletionHandler:^(Book *bookObj, BOOL success) {
+    [_dataCon checkoutBookWithUrl:bookUrl withName:name withDateString:date WithQueue:self.detailBookQueue andCompletionHandler:^(Book *bookObj, BOOL success) {
         
         [spinner stopAnimating];
         [spinner removeFromSuperview];

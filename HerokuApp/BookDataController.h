@@ -12,9 +12,11 @@
 
 @interface BookDataController : NSObject <NSURLSessionDelegate>
 
-- (void)getAllBooksWithCompletionHandler:(void (^)(NSMutableArray *result, BOOL success))completionHandler;
-- (void)deleteAllBooksWithCompletionHandler:(void (^)(BOOL success))completionHandler;
-- (void)deleteBookAtIndex:(NSIndexPath *)index WithUrl:(NSString *)bookURL andCompletionHandler:(void (^)(BOOL success))completionHandler;
-- (void)checkoutBookWithUrl:(NSString *)bookURL WithName:(NSString *)bookName withDateString:(NSString *)dateStr andCompletionHandler:(void (^)(Book *book, BOOL success))completionHandler;
+@property (nonatomic, strong) NSURLSession *bookDataControllerSession;
+
+- (void)getAllBooksWithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(NSMutableArray *result, BOOL success))completionHandler;
+- (void)deleteAllBooksWithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(BOOL success))completionHandler;
+- (void)deleteBookAtIndex:(NSIndexPath *)index withUrl:(NSString *)bookURL withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(BOOL success))completionHandler;
+- (void)checkoutBookWithUrl:(NSString *)bookURL withName:(NSString *)bookName withDateString:(NSString *)dateStr WithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *book, BOOL success))completionHandler;
 
 @end
