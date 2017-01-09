@@ -169,7 +169,7 @@
     dispatch_async(dispatch_queue_t_queue, deleteBookBlock);
 }
 
-- (void)checkoutBookWithUrl:(NSString *)bookURL withName:(NSString *)bookName withDateString:(NSString *)dateStr WithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *, BOOL))completionHandler {
+- (void)checkoutBookWithUrl:(NSString *)bookURL withName:(NSString *)bookName withDateString:(NSString *)dateStr withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *, BOOL))completionHandler {
     
     dispatch_block_t checkoutBookBlock = dispatch_block_create_with_qos_class(0, QOS_CLASS_USER_INITIATED, 0, ^{
 
@@ -207,6 +207,19 @@
                                                                   lastCheckedOutBy:[parsedObject objectForKey:@"lastCheckedOutBy"]
                                                                                url:[parsedObject objectForKey:@"url"]];
                                        
+                                       //Handle possible null values
+                                       if ([parsedObject objectForKey:@"publisher"] != [NSNull null]) {
+                                           [bookObj setPublisher:[parsedObject objectForKey:@"publisher"]];
+                                       }
+                                       if ([parsedObject objectForKey:@"categories"] != [NSNull null]) {
+                                           [bookObj setTags:[parsedObject objectForKey:@"categories"]];
+                                       }
+                                       if ([parsedObject objectForKey:@"lastCheckedOut"] != [NSNull null]) {
+                                           [bookObj setLastCheckedOut:[parsedObject objectForKey:@"lastCheckedOut"]];
+                                       }
+                                       if ([parsedObject objectForKey:@"lastCheckedOutBy"] != [NSNull null]) {
+                                           [bookObj setLastCheckedOutBy:[parsedObject objectForKey:@"lastCheckedOutBy"]];
+                                       }
                                        
                                        dispatch_async(dispatch_get_main_queue(), ^{
                                            completionHandler(bookObj, YES);
@@ -226,4 +239,55 @@
     dispatch_async(dispatch_queue_t_queue, checkoutBookBlock);
 }
 
+- (void)addBookWithDetails:(NSString *)details withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *, BOOL))completionHandler {
+    
+    dispatch_block_t addBookBlock = dispatch_block_create_with_qos_class(0, QOS_CLASS_USER_INITIATED, 0, ^{
+        
+        NSString *urlString = @"http://prolific-interview.herokuapp.com/561bdb9712514500090e71b2/books";
+        NSURL *url = [NSURL URLWithString:urlString];
+        NSMutableURLRequest *addBookRequest = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30.0];
+        [addBookRequest setHTTPMethod:@"POST"];
+        [addBookRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+        [addBookRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"content-type"];
+        [addBookRequest setHTTPBody:[details dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        //Make GET Request and handle response
+        NSURLSessionDataTask *addBookTask =
+        [self.bookDataControllerSession dataTaskWithRequest:addBookRequest
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                              
+                                              NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                                              NSLog(@"RESPONSE >>>>>> %@", response);
+                                              
+                                              if (!error && httpResponse.statusCode == 200) {
+                                                  NSError *localError;
+                                                  NSDictionary *parsedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&localError];
+                                                  NSLog(@"UPDATED BOOK >>>>>> %@", parsedObject);
+                                                  
+                                                  Book *bookObj = [[Book alloc] initWithTitle:[parsedObject objectForKey:@"title"]
+                                                                                       author:[parsedObject objectForKey:@"author"]
+                                                                                    publisher:@""
+                                                                                         tags:@""
+                                                                               lastCheckedOut:@""
+                                                                             lastCheckedOutBy:@""
+                                                                                          url:[parsedObject objectForKey:@"url"]];
+                                                  
+                                                  
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      completionHandler(bookObj, YES);
+                                                  });
+                                              }
+                                              else {
+                                                  //show error message
+                                                  NSLog(@"ERROR >>>>>>> %@", error.description);
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      completionHandler(nil, NO);
+                                                  });
+                                              }
+                                          }];
+        [addBookTask resume];
+    });
+    
+    dispatch_async(dispatch_queue_t_queue, addBookBlock);
+}
 @end

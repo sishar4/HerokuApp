@@ -17,6 +17,7 @@
 - (void)getAllBooksWithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(NSMutableArray *result, BOOL success))completionHandler;
 - (void)deleteAllBooksWithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(BOOL success))completionHandler;
 - (void)deleteBookAtIndex:(NSIndexPath *)index withUrl:(NSString *)bookURL withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(BOOL success))completionHandler;
-- (void)checkoutBookWithUrl:(NSString *)bookURL withName:(NSString *)bookName withDateString:(NSString *)dateStr WithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *book, BOOL success))completionHandler;
+- (void)checkoutBookWithUrl:(NSString *)bookURL withName:(NSString *)bookName withDateString:(NSString *)dateStr withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *book, BOOL success))completionHandler;
+- (void)addBookWithDetails:(NSString *)details withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *book, BOOL success))completionHandler;
 
 @end

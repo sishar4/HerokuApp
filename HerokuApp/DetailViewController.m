@@ -92,7 +92,7 @@
     [_dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
     NSString *date = [_dateFormatter stringFromDate:now];
     
-    [_dataCon checkoutBookWithUrl:bookUrl withName:name withDateString:date WithQueue:self.detailBookQueue andCompletionHandler:^(Book *bookObj, BOOL success) {
+    [_dataCon checkoutBookWithUrl:bookUrl withName:name withDateString:date withQueue:self.detailBookQueue andCompletionHandler:^(Book *bookObj, BOOL success) {
         
         [spinner stopAnimating];
         [spinner removeFromSuperview];

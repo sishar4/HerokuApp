@@ -16,6 +16,7 @@ import UIKit
 class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDelegate {
 
     var delegate: AddBookProtocol?
+    let dataController: BookDataController = BookDataController()
     
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var authorTextField: UITextField!
@@ -57,42 +58,26 @@ class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDe
         actInd.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
         view.addSubview(actInd)
         actInd.startAnimating()
-        
-        let session = URLSession.shared
-        let request = NSMutableURLRequest(url: URL(string: "http://prolific-interview.herokuapp.com/561bdb9712514500090e71b2/books")!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "content-type")
+
         let bodyData = String(format: "title=%@&author=%@&publisher=%@&categories=%@",titleTextField.text!, authorTextField.text!, publisherTextField.text!, tagsTextField.text!)
-        request.httpBody = bodyData.data(using: String.Encoding.utf8);
+        let queue = DispatchQueue(label: "com.sahil.add")
         
-        let task = session.dataTask(with: request as URLRequest, completionHandler: {data, response, error -> Void in
-            print("Response: \(response)")
-            let strData = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
-            print("Body: \(strData)")
+        dataController.addBook(withDetails: bodyData, withQueue: queue, andCompletionHandler: {bookObj, success -> Void in
             
-            do{
-                let json = try JSONSerialization.jsonObject(with: data!, options: .mutableLeaves) as? NSDictionary
-                print(json!)
-                let bookTitle = json?.object(forKey: "title") as! String
-                let author = json?.object(forKey: "author") as! String
-                let url = json?.object(forKey: "url") as! String
-                
-                let bookObj = Book(title: bookTitle, author: author, publisher: self.publisherTextField.text, tags: self.tagsTextField.text,  lastCheckedOut: "", lastCheckedOutBy: "", url: url)
-                
+            actInd.stopAnimating()
+            actInd.removeFromSuperview()
+            
+            if success {
                 DispatchQueue.main.async(execute: {
                     self.delegate?.added(book: bookObj!)
                     self.dismiss(animated: true, completion: nil)
                 })
-                
-            } catch let error as NSError {
-                print(error)
+            } else {
                 let alert = UIAlertController(title: "Could Not Add Book", message: "Unable to add book to the library. Please try again.", preferredStyle: UIAlertControllerStyle.alert)
                 alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler:nil))
                 self.present(alert, animated: true, completion: nil)
             }
         })
-        task.resume()
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
