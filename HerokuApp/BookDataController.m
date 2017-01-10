@@ -70,8 +70,6 @@
                                        [bookObj setLastCheckedOutBy:[dict objectForKey:@"lastCheckedOutBy"]];
                                    }
                                    
-                                   Book *shared = [Book sharedInstance];
-                                   [shared.bookArray addObject:bookObj];
                                    [listOfBooks addObject:bookObj];
                                }
 
@@ -111,8 +109,6 @@
                                      NSLog(@"RESPONSE >>>>>> %@", response);
                                      
                                      if (!error && httpResponse.statusCode == 200) {
-                                         Book *shared = [Book sharedInstance];
-                                         [shared.bookArray removeAllObjects];
                                          dispatch_async(dispatch_get_main_queue(), ^{
                                              completionHandler(YES);
                                          });
@@ -149,8 +145,6 @@
                                  NSLog(@"RESPONSE >>>>>> %@", response);
                                  
                                  if (!error && httpResponse.statusCode == 204) {
-                                     Book *shared = [Book sharedInstance];
-                                     [shared.bookArray removeObjectAtIndex:index.row];
                                      dispatch_async(dispatch_get_main_queue(), ^{
                                          completionHandler(YES);
                                      });

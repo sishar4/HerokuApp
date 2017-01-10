@@ -10,8 +10,6 @@
 
 @interface Book : NSObject
 
-+(id)sharedInstance;
-
 @property (nonatomic, strong) NSMutableArray *bookArray;
 
 @property (nonatomic, strong) NSString *title;

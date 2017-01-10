@@ -64,8 +64,6 @@
 
 - (void)updatedBook:(Book *)obj AtIndex:(NSUInteger)index {
     
-    Book *shared = [Book sharedInstance];
-    [shared.bookArray replaceObjectAtIndex:index withObject:obj];
     [self.books replaceObjectAtIndex:index withObject:obj];
     [self.tableView reloadData];
 }
@@ -73,9 +71,7 @@
 #pragma mark - AddBookProtocol
 
 - (void)addedWithBook:(Book *)book {
-    
-    Book *shared = [Book sharedInstance];
-    [shared.bookArray addObject:book];
+
     [self.books addObject:book];
     [self.tableView reloadData];
 }
