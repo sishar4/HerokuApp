@@ -20,6 +20,7 @@
 		FAC96E031BD02C8200C08752 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC96E011BD02C8200C08752 /* LaunchScreen.storyboard */; };
 		FAC96E0E1BD02C8200C08752 /* HerokuAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC96E0D1BD02C8200C08752 /* HerokuAppTests.m */; };
 		FAC96E191BD02C8200C08752 /* HerokuAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC96E181BD02C8200C08752 /* HerokuAppUITests.m */; };
+		FAE10BC61E2566D9002248F9 /* HerokuAlertHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE10BC51E2566D9002248F9 /* HerokuAlertHelper.m */; };
 		FAFD09C21BE42F42008D2522 /* BookDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAFD09C11BE42F42008D2522 /* BookDataController.m */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +68,8 @@
 		FAC96E141BD02C8200C08752 /* HerokuAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HerokuAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC96E181BD02C8200C08752 /* HerokuAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HerokuAppUITests.m; sourceTree = "<group>"; };
 		FAC96E1A1BD02C8200C08752 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FAE10BC41E2566D9002248F9 /* HerokuAlertHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HerokuAlertHelper.h; sourceTree = "<group>"; };
+		FAE10BC51E2566D9002248F9 /* HerokuAlertHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HerokuAlertHelper.m; sourceTree = "<group>"; };
 		FAFD09C01BE42F42008D2522 /* BookDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookDataController.h; sourceTree = "<group>"; };
 		FAFD09C11BE42F42008D2522 /* BookDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookDataController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -112,6 +115,8 @@
 				FAA5B5B61BD067200024DFBD /* RoundedButton.m */,
 				FA96D4E51BD20B57004ED147 /* RoundedTextField.h */,
 				FA96D4E61BD20B57004ED147 /* RoundedTextField.m */,
+				FAE10BC41E2566D9002248F9 /* HerokuAlertHelper.h */,
+				FAE10BC51E2566D9002248F9 /* HerokuAlertHelper.m */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -328,6 +333,7 @@
 			files = (
 				FAA5B5B71BD067200024DFBD /* RoundedButton.m in Sources */,
 				FAC96DF51BD02C8200C08752 /* AppDelegate.m in Sources */,
+				FAE10BC61E2566D9002248F9 /* HerokuAlertHelper.m in Sources */,
 				FAC96DF81BD02C8200C08752 /* MasterViewController.m in Sources */,
 				FAA5B5C11BD0C6170024DFBD /* AddBookViewController.swift in Sources */,
 				FAC96DF21BD02C8200C08752 /* main.m in Sources */,

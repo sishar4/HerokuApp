@@ -9,6 +9,7 @@
 #import "MasterViewController.h"
 #import "Book.h"
 #import "HerokuApp-Swift.h"
+#import "HerokuAlertHelper.h"
 
 @interface MasterViewController () <AddBookProtocol>
 
@@ -36,10 +37,7 @@
             [self.books addObjectsFromArray:result];
             [self.tableView reloadData];
         } else {
-            UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Retrieve Books" message:@"Failed to retrieve the list of books. Please try again." preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            [failAlert addAction:removeAlert];
-            [self presentViewController:failAlert animated:YES completion:nil];
+            [HerokuAlertHelper presentAlertFromViewController:self WithTitle:@"Could Not Retrieve Books" andMessage:@"Failed to retrieve the list of books. Please try again."];
         }
     }];
 }
@@ -149,10 +147,7 @@
             [self.books removeObjectAtIndex:indexPath.row];
             [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
         } else {
-            UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Delete Book" message:@"Failed to delete the specified book. Please try again." preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            [failAlert addAction:removeAlert];
-            [self presentViewController:failAlert animated:YES completion:nil];
+            [HerokuAlertHelper presentAlertFromViewController:self WithTitle:@"Could Not Delete Book" andMessage:@"Failed to delete the specified book. Please try again."];
         }
     }];
 }
@@ -170,10 +165,7 @@
         [deleteAllAlert addAction:confirm];
         [self presentViewController:deleteAllAlert animated:YES completion:nil];
     } else {
-        UIAlertController *noDeleteAllAlert = [UIAlertController alertControllerWithTitle:@"No Books to Delete" message:@"There are no books to delete in your library." preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-        [noDeleteAllAlert addAction:cancel];
-        [self presentViewController:noDeleteAllAlert animated:YES completion:nil];
+        [HerokuAlertHelper presentAlertFromViewController:self WithTitle:@"No Books to Delete" andMessage:@"There are no books to delete in your library."];
     }
     
 }
@@ -194,11 +186,8 @@
         if (success) {
             [self.books removeAllObjects];
             [self.tableView reloadData];
-        } else {
-            UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Delete All Books" message:@"Failed to delete all books in the library. Please try again." preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            [failAlert addAction:removeAlert];
-            [self presentViewController:failAlert animated:YES completion:nil];
+        } else {            
+            [HerokuAlertHelper presentAlertFromViewController:self WithTitle:@"Could Not Delete All Books" andMessage:@"Failed to delete all books in the library. Please try again."];
         }
     }];
 }
@@ -232,6 +221,7 @@
     _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     _spinner.center = self.view.center;
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

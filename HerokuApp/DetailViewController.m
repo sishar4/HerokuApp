@@ -8,6 +8,7 @@
 
 #import "DetailViewController.h"
 #import "Book.h"
+#import "HerokuAlertHelper.h"
 
 @interface DetailViewController ()
 
@@ -103,11 +104,8 @@
             [self.delegate updatedBook:bookObj AtIndex:_indexOfBook];
             
             [self.navigationController popViewControllerAnimated:YES];
-        } else {
-            UIAlertController *failAlert = [UIAlertController alertControllerWithTitle:@"Could Not Checkout Book" message:@"Failed to checkout the selected book. Please try again." preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *removeAlert = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            [failAlert addAction:removeAlert];
-            [self presentViewController:failAlert animated:YES completion:nil];
+        } else {            
+            [HerokuAlertHelper presentAlertFromViewController:self WithTitle:@"Could Not Checkout Book" andMessage:@"Failed to checkout the selected book. Please try again."];
         }
     }];
 }

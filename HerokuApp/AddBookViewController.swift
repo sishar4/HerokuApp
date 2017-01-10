@@ -41,9 +41,8 @@ class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDe
     
     @IBAction func submitNewBook(_ sender: UIButton) {
         if titleTextField.text == "" || authorTextField.text == "" || (titleTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces) == "") || (authorTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces) == "") {
-            let alert = UIAlertController(title: "Form Incomplete", message: "You must specify a book title and author(s) to add a new book.", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            
+            HerokuAlertHelper.presentAlert(from:self, withTitle: "Form Incomplete", andMessage: "You must specify a book title and author(s) to add a new book.")
         } else {
             print("Book title >>> " + titleTextField.text!)
             print("Book author >>> " + authorTextField.text!)
@@ -73,9 +72,7 @@ class AddBookViewController: UIViewController, URLSessionDelegate, UITextFieldDe
                     self.dismiss(animated: true, completion: nil)
                 })
             } else {
-                let alert = UIAlertController(title: "Could Not Add Book", message: "Unable to add book to the library. Please try again.", preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler:nil))
-                self.present(alert, animated: true, completion: nil)
+                HerokuAlertHelper.presentAlert(from:self, withTitle: "Could Not Add Book", andMessage: "Unable to add book to the library. Please try again.")
             }
         })
     }
