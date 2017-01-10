@@ -90,7 +90,7 @@
         [bookTask resume];
     });
     
-    dispatch_async(dispatch_queue_t_queue, getBooksBlock);
+    dispatch_sync(dispatch_queue_t_queue, getBooksBlock);
 }
 
 - (void)deleteAllBooksWithQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(BOOL))completionHandler {
@@ -128,7 +128,7 @@
         [deleteAllBooksTask resume];
     });
                                                                           
-    dispatch_async(dispatch_queue_t_queue, deleteAllBooksBlock);
+    dispatch_sync(dispatch_queue_t_queue, deleteAllBooksBlock);
 }
 
 - (void)deleteBookAtIndex:(NSIndexPath *)index withUrl:(NSString *)bookURL withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(BOOL))completionHandler {
@@ -166,7 +166,7 @@
         [deleteBookTask resume];
     });
     
-    dispatch_async(dispatch_queue_t_queue, deleteBookBlock);
+    dispatch_sync(dispatch_queue_t_queue, deleteBookBlock);
 }
 
 - (void)checkoutBookWithUrl:(NSString *)bookURL withName:(NSString *)bookName withDateString:(NSString *)dateStr withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *, BOOL))completionHandler {
@@ -236,7 +236,7 @@
         [checkoutBookTask resume];
     });
     
-    dispatch_async(dispatch_queue_t_queue, checkoutBookBlock);
+    dispatch_sync(dispatch_queue_t_queue, checkoutBookBlock);
 }
 
 - (void)addBookWithDetails:(NSString *)details withQueue:(id)dispatch_queue_t_queue andCompletionHandler:(void (^)(Book *, BOOL))completionHandler {
@@ -288,6 +288,6 @@
         [addBookTask resume];
     });
     
-    dispatch_async(dispatch_queue_t_queue, addBookBlock);
+    dispatch_sync(dispatch_queue_t_queue, addBookBlock);
 }
 @end
